@@ -1,0 +1,74 @@
+name: pyoxidizer workflow
+
+on: push
+
+jobs:
+  build_gpu_burn_script:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          # needed so that setuptools_scm can correctly figure out version at build
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install build dependencies
+        run: |
+          pip install pyoxidizer==0.22.0
+          sudo apt update --yes
+          sudo apt install --yes build-essential devscripts debhelper
+
+      - name: Build gpu_burn_script binary
+        run: pyoxidizer build --release -- gpu_burn_script
+
+      - name: Test gpu_burn_script
+        run: ./build/x86_64-unknown-linux-gnu/release/gpu_burn_script/gpu_burn_script -h
+
+  build_gpu_burn_epilog_parser:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          # needed so that setuptools_scm can correctly figure out version at build
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install build dependencies
+        run: |
+          pip install pyoxidizer==0.22.0
+          sudo apt update --yes
+          sudo apt install --yes build-essential devscripts debhelper
+
+      - name: Build gpu_burn_epilog_parser binary
+        run: pyoxidizer build --release -- gpu_burn_epilog_parser
+
+      - name: Test gpu_burn_epilog_parser
+        run: ./build/x86_64-unknown-linux-gnu/release/gpu_burn_epilog_parser/gpu_burn_epilog_parser -h
+
+  test_gpu_burn:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
+
+      - name: Install test dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Unit tests
+        run: python3 unittests.py 
