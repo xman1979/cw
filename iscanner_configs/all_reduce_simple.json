@@ -1,0 +1,40 @@
+{
+        "scheduler": {
+                "wait_command_execution": true,
+                "keep_sbatch_script_file": true,
+                "sbatch_script_folder": "/engshare/xiaodongma/iscanner_sbatch_scripts/all_reduce_simple",
+                "not_same_job_name_as_sbatch_script_name": false,
+                "exclusive": true,
+		"partition": "obtest",
+                "additional_script_options": "export PATH=$PATH:/opt/hpcx/ompi/bin/\necho NCCL_ALGO\nexport LD_LIBRARY_PATH=/engshare/xiaodongma/custom_nccl_tests/nccl/build/lib/:LD_LIBRARY_PATH\nsleep 0"
+        },
+        "runner": {
+                "nccl_tests_executable": "/engshare/xiaodongma/custom_nccl_tests/nccl-tests/build/all_reduce_perf",
+		"mpi_parameters": "--map-by ppr:8:node -x NCCL_SOCKET_IFNAME=^lo,docker0,veth",
+		"start_mem": "512",
+		"end_mem": "16G",
+		"step_factor": 2,
+		"gpus": 1,
+		"iterations": 50,
+		"check_iteration": 0,
+                "wait_for_all_runs": false,
+                "output_directory": "/engshare/xiaodongma/iscanner_results/all_reduce_simple",
+                "repetitions": 1,
+		"rate_limit_delay": 0.5,
+                "poll_job_status_interval": 10,
+		"num_nodes": [2],
+		"processes_per_node": 8,
+		"job_name_tag": "nccl_tests_all_reduce",
+		"mode": "simple_submission"
+        },
+        "parser": {
+                "parse_directory": "/engshare/xiaodongma/iscanner_results/all_reduce_simple"
+        },
+        "summarizer": {
+                "performance_threshold": 465,
+                "plot_performance": true,
+                "msg_size": "8GiB",
+                "analysis_mode": "default",
+                "performance_plot_name": "/engshare/xiaodongma/iscanner_results/all_reduce_simple.png"
+        }
+}
